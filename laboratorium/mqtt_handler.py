@@ -4,6 +4,7 @@ from flask import g, current_app as app
 import json
 from laboratorium.db import get_db, get_user
 from laboratorium import r
+from laboratorium.helpers import user_handler
 
 
 mqtt = Mqtt(app, True)
@@ -25,16 +26,7 @@ def handle_checkin(client, userdata, message):
     user_id = json.loads(message.payload.decode())['user_id']
     user = get_user(user_id, db)
 
-    in_lab = "{}:in_lab".format(user_id)
-    if r.get(in_lab) == b'0':
-        r.set(in_lab, 1)
-    else:
-        r.set(in_lab, 0)
-
-    resp = {}
-    resp["user_name"] = "{} {}.".format(
-        user['last_name'], user['first_name'][0])
-    resp["direction"] = int(r.get(in_lab))
+    resp = user_handler(user, None, r)
 
     print(resp)
 
