@@ -1,6 +1,10 @@
 import os
 
 from flask import Flask, g
+from flask_redis import FlaskRedis
+
+
+r = FlaskRedis()
 
 
 def create_app(test_config=None):
@@ -15,6 +19,8 @@ def create_app(test_config=None):
         os.makedirs(app.instance_path)
     except OSError:
         pass
+
+    r.init_app(app)
 
     with app.app_context():
 

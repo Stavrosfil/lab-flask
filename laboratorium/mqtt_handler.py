@@ -3,15 +3,20 @@ from flask_mqtt import Mqtt
 from flask import g, current_app as app
 import json
 from laboratorium.db import get_db, get_user
+from laboratorium import r
 
 
-mqtt = Mqtt(app)
+mqtt = Mqtt(app, True)
 db = get_db()
+
+
+MQTT_RFID = app.config['MQTT_RFID_TOPIC']
+MQTT_RESPONSE = app.config['MQTT_RFID_RESP_TOPIC']
 
 
 @mqtt.on_connect()
 def handle_connect(client, userdata, flags, rc):
-    mqtt.subscribe('testopic')
+    mqtt.subscribe(MQTT_RFID)
 
 
 @mqtt.on_message()
@@ -23,7 +28,21 @@ def handle_mqtt_message(client, userdata, message):
 
     user_id = json.loads(message.payload.decode())['user_id']
     user = get_user(user_id, db)
-    print(user["mm_username"])
+
+    in_lab = "{}:in_lab".format(user_id)
+    if r.get(in_lab) == b'0':
+        r.set(in_lab, 1)
+    else:
+        r.set(in_lab, 0)
+
+    resp = {}
+    resp["user_name"] = "{} {}.".format(
+        user['last_name'], user['first_name'][0])
+    resp["direction"] = int(r.get(in_lab))
+
+    print(resp)
+
+    mqtt.publish(MQTT_RESPONSE, json.dumps(resp))
 
 
 @mqtt.on_log()
