@@ -26,7 +26,7 @@ def handle_checkin(client, userdata, message):
     user_id = json.loads(message.payload.decode())['user_id']
     user = get_user(user_id, db)
 
-    resp = user_handler(user, None, r)
+    resp = user_handler(user)
 
     print(resp)
 
