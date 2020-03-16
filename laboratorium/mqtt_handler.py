@@ -19,12 +19,8 @@ def handle_connect(client, userdata, flags, rc):
     mqtt.subscribe(MQTT_RFID)
 
 
-@mqtt.on_message()
-def handle_mqtt_message(client, userdata, message):
-    data = dict(
-        topic=message.topic,
-        payload=message.payload.decode()
-    )
+@mqtt.on_topic(MQTT_RFID)
+def handle_checkin(client, userdata, message):
 
     user_id = json.loads(message.payload.decode())['user_id']
     user = get_user(user_id, db)
@@ -43,6 +39,15 @@ def handle_mqtt_message(client, userdata, message):
     print(resp)
 
     mqtt.publish(MQTT_RESPONSE, json.dumps(resp))
+
+
+@mqtt.on_message()
+def handle_mqtt_message(client, userdata, message):
+    data = dict(
+        topic=message.topic,
+        payload=message.payload.decode()
+    )
+    print(data)
 
 
 @mqtt.on_log()
