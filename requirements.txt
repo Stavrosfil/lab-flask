@@ -5,3 +5,4 @@ flask-bootstrap
 flask-mqtt
 mattermostdriver
 flask-redis
+flask-restful

@@ -31,6 +31,7 @@ def create_app(test_config=None):
     api = Api(app)
 
     api.add_resource(admin.GetUser, "/admin/getuser/<string:user_id>")
+    api.add_resource(admin.AddUser, "/admin/adduser")
 
     with app.app_context():
 
