@@ -1,8 +1,12 @@
 import os
 
-from flask import Flask, g
-from flask_redis import FlaskRedis
+from . import db
 
+from flask import Flask, g, request
+from flask_redis import FlaskRedis
+from flask_restful import Resource, Api
+import laboratorium.admin
+import sqlite3
 
 r = FlaskRedis()
 
@@ -14,7 +18,7 @@ def create_app(test_config=None):
 
     # Load app config file
     # app.config.from_envvar('APP_CONFIG')
-    app.config.from_pyfile('config.py', silent=False)
+    app.config.from_pyfile("config.py", silent=False)
 
     # ensure the instance folder exists
     try:
@@ -24,13 +28,15 @@ def create_app(test_config=None):
 
     # Initialize global objects
     r.init_app(app)
+    api = Api(app)
+
+    api.add_resource(admin.GetUser, "/admin/getuser/<string:user_id>")
 
     with app.app_context():
 
-        from . import db
         db.init_app()
 
-        from . import auth
-        app.register_blueprint(auth.bp)
+        #     from . import auth
+        #     app.register_blueprint(auth.bp)
 
         return app
