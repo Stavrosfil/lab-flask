@@ -2,14 +2,13 @@ DROP TABLE IF EXISTS post;
 
 CREATE TABLE users
 (
-  --   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  id INTEGER NOT NULL,
-  second_id INTEGER NOT NULL,
+  id TEXT UNIQUE PRIMARY KEY NOT NULL,
+  second_id TEXT,
   first_name TEXT NOT NULL,
   last_name TEXT NOT NULL,
   mm_username TEXT UNIQUE NOT NULL,
   project TEXT NOT NULL,
-  PRIMARY KEY(id, second_id)
+  administrator BOOLEAN DEFAULT 0
 );
 
 -- CREATE TABLE post (
