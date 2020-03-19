@@ -8,9 +8,11 @@ r = FlaskRedis()
 
 
 def create_app(test_config=None):
+
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
 
+    # Load app config file
     # app.config.from_envvar('APP_CONFIG')
     app.config.from_pyfile('config.py', silent=False)
 
@@ -20,15 +22,13 @@ def create_app(test_config=None):
     except OSError:
         pass
 
+    # Initialize global objects
     r.init_app(app)
 
     with app.app_context():
 
         from . import db
-        # db.init_app()
-
-        from . import mqtt_handler
-        # mqtt_handler.init_mqtt()
+        db.init_app()
 
         from . import auth
         app.register_blueprint(auth.bp)
