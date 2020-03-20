@@ -6,3 +6,4 @@ flask-mqtt
 mattermostdriver
 flask-redis
 flask-restful
+flask-influxdb

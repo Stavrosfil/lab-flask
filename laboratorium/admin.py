@@ -6,6 +6,8 @@ from laboratorium.db import get_db, get_user, query_db
 
 import json
 
+# TODO: delete objects when no longer needed
+
 
 class GetUser(Resource):
     def get(self, user_id):
@@ -20,12 +22,9 @@ class GetUser(Resource):
                 "mm_username": user.mm_username,
                 "project": user.project,
             }
-
             return resp
         else:
             return {"error": "user not found"}, 404
-
-        # return {"first_name": user["first_name"]}
 
 
 class AddUser(Resource):
@@ -68,7 +67,22 @@ class GetUsers(Resource):
 
         resp = []
         for user in q:
+            user.has_keys = user.has_keys()
+            user.in_lab = user.in_lab()
             user = User(dict(user))
             resp.append(user.__dict__)
 
         return resp
+
+
+class CheckIn(Resource):
+    def post(self):
+        # Only user_id and in_lab is needed here.
+        user = User(request.json)
+        user.checkin()
+
+
+class CheckOut(Resource):
+    def post(self):
+        user = User(request.json)
+        user.checkout()
