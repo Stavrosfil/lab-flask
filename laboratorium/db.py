@@ -23,7 +23,7 @@ def get_user(user_id, args=()):
     )
     rv = cur.fetchall()
     cur.close()
-    return rv[0] if rv else None
+    return dict(rv[0]) if rv else None
 
 
 # ------------------------------- OPEN-CLOSE DB ------------------------------ #

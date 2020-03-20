@@ -1,14 +1,14 @@
 import os
-
 from . import db
-
 from flask import Flask, g, request
 from flask_redis import FlaskRedis
 from flask_restful import Resource, Api
 from laboratorium import routes
-import sqlite3
+from flask_influxdb import InfluxDB
+
 
 r = FlaskRedis()
+influx = InfluxDB()
 
 
 def create_app(test_config=None):
@@ -17,7 +17,6 @@ def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
 
     # Load app config file
-    # app.config.from_envvar('APP_CONFIG')
     app.config.from_pyfile("config.py", silent=False)
 
     # ensure the instance folder exists
@@ -26,16 +25,14 @@ def create_app(test_config=None):
     except OSError:
         pass
 
-    # Initialize global objects
-    r.init_app(app)
-    api = Api(app)
-    routes.init_routes(api)
-
     with app.app_context():
+        # Initialize global objects
+        r.init_app(app)
+        influx.init_app(app)
+
+        api = Api(app)
+        routes.init_routes(api)
 
         db.init_app()
-
-        #     from . import auth
-        #     app.register_blueprint(auth.bp)
 
         return app

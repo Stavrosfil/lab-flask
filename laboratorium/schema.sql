@@ -2,7 +2,7 @@ DROP TABLE IF EXISTS post;
 
 CREATE TABLE users
 (
-  id TEXT UNIQUE PRIMARY KEY NOT NULL,
+  user_id TEXT UNIQUE PRIMARY KEY NOT NULL,
   second_id TEXT,
   first_name TEXT NOT NULL,
   last_name TEXT NOT NULL,

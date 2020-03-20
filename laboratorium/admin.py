@@ -1,5 +1,6 @@
 from flask import request
 from flask_restful import Resource
+from laboratorium.User import User
 
 from laboratorium.db import get_db, get_user, query_db
 
@@ -8,16 +9,16 @@ import json
 
 class GetUser(Resource):
     def get(self, user_id):
-        user = get_user(user_id)
+        user = User(get_user(user_id))
 
-        if user is not None:
+        if user.user_id is not None:
             resp = {
-                "user_id": user["user_id"],
-                "secondary_id": user["secondary_id"],
-                "first_name": user["first_name"],
-                "last_name": user["last_name"],
-                "mm_username": user["mm_username"],
-                "project": user["project"],
+                "user_id": user.user_id,
+                "secondary_id": user.second_id,
+                "first_name": user.first_name,
+                "last_name": user.last_name,
+                "mm_username": user.mm_username,
+                "project": user.project,
             }
 
             return resp
@@ -29,26 +30,29 @@ class GetUser(Resource):
 
 class AddUser(Resource):
     def put(self):
-        sql = """ INSERT INTO users (id,
+        sql = """ INSERT INTO users (user_id,
                                     second_id,
                                     first_name,
                                     last_name,
                                     mm_username,
-                                    project)
-              VALUES (?,?,?,?,?,?) """
+                                    project,
+                                    administrator)
+              VALUES (?,?,?,?,?,?,?) """
 
-        user = (
-            request.json.get("id"),
-            request.json.get("second_id"),
-            request.json.get("first_name"),
-            request.json.get("last_name"),
-            request.json.get("mm_username"),
-            request.json.get("project"),
+        user = User(request.json)
+        sql_data = (
+            user.user_id,
+            user.second_id,
+            user.first_name,
+            user.last_name,
+            user.mm_username,
+            user.project,
+            user.administrator,
         )
 
         try:
             cur = get_db().cursor()
-            cur.execute(sql, user)
+            cur.execute(sql, sql_data)
             cur.close()
             get_db().commit()
         except Exception as e:
@@ -64,7 +68,7 @@ class GetUsers(Resource):
 
         resp = []
         for user in q:
-            user["in_lab"] = r.get(user["user_id"] + ":in_lab")
-            resp.append(dict(user))
+            user = User(dict(user))
+            resp.append(user.__dict__)
 
         return resp
