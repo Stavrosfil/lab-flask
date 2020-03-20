@@ -1,12 +1,9 @@
 from flask import request
 from flask_restful import Resource
 
-from flask import g, current_app as app
 from laboratorium.db import get_db, get_user, query_db
 
 import json
-
-todos = {}
 
 
 class GetUser(Resource):
@@ -58,3 +55,16 @@ class AddUser(Resource):
             return str(e), 409
 
         return cur.lastrowid
+
+
+class GetUsers(Resource):
+    def get(self):
+        sql = "select * from users"
+        q = query_db(sql)
+
+        resp = []
+        for user in q:
+            user["in_lab"] = r.get(user["user_id"] + ":in_lab")
+            resp.append(dict(user))
+
+        return resp

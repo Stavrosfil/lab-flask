@@ -5,7 +5,7 @@ from . import db
 from flask import Flask, g, request
 from flask_redis import FlaskRedis
 from flask_restful import Resource, Api
-import laboratorium.admin
+from laboratorium import routes
 import sqlite3
 
 r = FlaskRedis()
@@ -29,9 +29,7 @@ def create_app(test_config=None):
     # Initialize global objects
     r.init_app(app)
     api = Api(app)
-
-    api.add_resource(admin.GetUser, "/admin/getuser/<string:user_id>")
-    api.add_resource(admin.AddUser, "/admin/adduser")
+    routes.init_routes(api)
 
     with app.app_context():
 
