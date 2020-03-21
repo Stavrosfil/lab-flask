@@ -7,7 +7,7 @@ Dedicated file for everything redis
 # ---------------------------------- Setters --------------------------------- #
 
 
-def is_in_lab(user):
+def get_lab_id(user):
 
     # Redis status string
     r_in_lab = "{}:in_lab".format(user.user_id)
@@ -24,18 +24,18 @@ def get_last_checkin(user):
     return int(r.get(r_checkin_time))
 
 
-def has_keys(user):
+def get_key_id(user):
 
-    r_has_keys = "{}:has_keys".format(user.user_id)
+    r_key_id = "{}:key_id".format(user.user_id)
 
     # Will return the id of the keys the user has.
-    return str(r.get(r_has_keys))
+    return str(r.get(r_key_id))
 
 
 # ---------------------------------- Getters --------------------------------- #
 
 
-def set_in_lab(user, lab_id):
+def set_lab_id(user, lab_id):
     """Sets redis status user checkin status.
     
     Arguments:
@@ -63,12 +63,12 @@ def set_last_checkin(user, timestamp):
     r.set(r_checkin_time, timestamp)
 
 
-def set_has_keys(user, keys_id):
+def set_key_id(user, key_id):
 
     # Set holder of the keys in the key object
     # 12345678:user_id -> 87654321
-    r_keys_id = "{}:user_id".format(keys_id)
-    r.set(r_keys_id, user.user_id)
+    r_key_id = "{}:user_id".format(key_id)
+    r.set(r_key_id, user.user_id)
 
 
 # ------------------------------ Initialization ------------------------------ #

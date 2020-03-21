@@ -11,8 +11,8 @@ class User:
     last_name = ""
     project = ""
     administrator = False
-    in_lab = 0
-    has_keys = 0
+    lab_id = 0
+    key_id = 0
 
     # TODO: make sure the user is valid before performing other tasks
     def __init__(self, user={}):
@@ -23,16 +23,17 @@ class User:
             self.first_name = user.get("first_name")
             self.last_name = user.get("last_name")
             self.project = user.get("project")
-            self.in_lab = user.get("in_lab")
-            self.has_keys = user.get("has_keys")
+            self.lab_id = user.get("lab_id")
+            self.key_id = user.get("key_id")
 
             # TODO: check other values for initialization.
 
-    def is_in_lab(self):
-        return rf.in_lab(self)
+    def get_lab_id(self):
+        return rf.get_lab_id(self)
 
-    def has_keys(self):
-        return rf.has_keys(self)
+    def get_key_id(self):
+        print(self)
+        return rf.get_key_id(self)
 
     def last_checkin(self):
         pass
@@ -55,7 +56,7 @@ class User:
         ]
 
         influx.write_points(infl)
-        rf.set_in_lab(self, self.in_lab)
+        rf.set_lab_id(self, self.lab_id)
         rf.set_last_checkin(self, timestamp)
 
     def checkout(self):
@@ -77,5 +78,5 @@ class User:
         ]
 
         influx.write_points(infl)
-        rf.set_in_lab(self, 0)
+        rf.set_lab_id(self, 0)
         rf.set_last_checkin(self, 0)

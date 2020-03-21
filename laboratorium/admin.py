@@ -67,9 +67,9 @@ class GetUsers(Resource):
 
         resp = []
         for user in q:
-            user.has_keys = user.has_keys()
-            user.in_lab = user.in_lab()
             user = User(dict(user))
+            user.key_id = user.get_key_id()
+            user.lab_id = user.get_lab_id()
             resp.append(user.__dict__)
 
         return resp
