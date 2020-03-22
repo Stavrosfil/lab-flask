@@ -11,8 +11,8 @@ class User:
     last_name = ""
     project = ""
     administrator = False
-    lab_id = 0
-    key_id = 0
+    lab_id = "0"
+    key_id = "0"
 
     # TODO: make sure the user is valid before performing other tasks
     def __init__(self, user={}):
@@ -23,8 +23,12 @@ class User:
             self.first_name = user.get("first_name")
             self.last_name = user.get("last_name")
             self.project = user.get("project")
-            self.lab_id = user.get("lab_id")
-            self.key_id = user.get("key_id")
+            self.lab_id = (
+                self.lab_id if user.get("lab_id") is None else user.get("lab_id")
+            )
+            self.key_id = (
+                self.key_id if user.get("key_id") is None else user.get("key_id")
+            )
 
             # TODO: check other values for initialization.
 
@@ -32,11 +36,10 @@ class User:
         return rf.get_lab_id(self)
 
     def get_key_id(self):
-        print(self)
         return rf.get_key_id(self)
 
-    def last_checkin(self):
-        pass
+    def get_last_checkin(self):
+        return rf.get_last_checkin(self)
 
     def checkin(self):
 

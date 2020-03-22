@@ -1,7 +1,7 @@
 import sqlite3
 
-db = sqlite3.connect("../instance/users.db")
-db2 = sqlite3.connect("../instance/users_flask.db")
+db = sqlite3.connect("../instance/users.sqlite")
+db2 = sqlite3.connect("../instance/users_flask.sqlite")
 
 
 def select_all_tasks(conn):
@@ -48,7 +48,18 @@ def init_db(conn):
 init_db(db2)
 
 for user in select_all_tasks(db):
-    user = (user[0], user[1], user[2], user[3], user[4], user[8], 0)
+    if user[8] == "C":
+        project = "Cubesat"
+    if user[8] == "A":
+        project = "Aeronautics"
+    if user[8] == "R":
+        project = "Rocketry"
+    if user[8] == "M":
+        project = "Marketing"
+    if user[8] == "B":
+        user[8] = "Board"
+
+    user = (user[0], user[1], user[2], user[3], user[4], project, 0)
     print(user)
     copy_users(db2, user)
     db2.commit()

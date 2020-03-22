@@ -14,7 +14,7 @@ def get_lab_id(user):
 
     # Will return the id of the lab the user is in.
     lab_id = r.get(r_lab_id)
-    return lab_id.decode("utf-8") if lab_id is not None else "0"
+    return lab_id.decode("utf-8") if lab_id is not None else user.lab_id
 
 
 def get_last_checkin(user):
@@ -30,7 +30,8 @@ def get_key_id(user):
     r_key_id = "{}:key_id".format(user.user_id)
 
     # Will return the id of the keys the user has.
-    return str(r.get(r_key_id))
+    key_id = r.get(r_key_id)
+    return key_id.decode("utf-8") if key_id is not None else user.key_id
 
 
 # ---------------------------------- Getters --------------------------------- #
@@ -46,7 +47,7 @@ def set_lab_id(user, lab_id):
         lab_id {int} --  The lab ID the user is checking in or out. 0 means he is checked out.
     """
 
-    r_in_lab = "{}:in_lab".format(user.user_id)
+    r_in_lab = "{}:lab_id".format(user.user_id)
     r.set(r_in_lab, lab_id)
 
 
@@ -67,8 +68,8 @@ def set_last_checkin(user, timestamp):
 def set_key_id(user, key_id):
 
     # Set holder of the keys in the key object
-    # 12345678:user_id -> 87654321
-    r_key_id = "{}:user_id".format(key_id)
+    # 12345678:key_id -> 87654321
+    r_key_id = "{}:key_id".format(key_id)
     r.set(r_key_id, user.user_id)
 
 
