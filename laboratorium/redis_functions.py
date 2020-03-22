@@ -10,10 +10,11 @@ Dedicated file for everything redis
 def get_lab_id(user):
 
     # Redis status string
-    r_in_lab = "{}:in_lab".format(user.user_id)
+    r_lab_id = "{}:lab_id".format(user.user_id)
 
     # Will return the id of the lab the user is in.
-    return str(r.get(r_in_lab))
+    lab_id = r.get(r_lab_id)
+    return lab_id.decode("utf-8") if lab_id is not None else "0"
 
 
 def get_last_checkin(user):

@@ -1,12 +1,12 @@
-DROP TABLE IF EXISTS post;
+DROP TABLE IF EXISTS users;
 
 CREATE TABLE users
 (
   user_id TEXT UNIQUE PRIMARY KEY NOT NULL,
-  second_id TEXT,
+  second_id TEXT UNIQUE,
   first_name TEXT NOT NULL,
   last_name TEXT NOT NULL,
-  mm_username TEXT UNIQUE NOT NULL,
+  mm_username TEXT UNIQUE,
   project TEXT NOT NULL,
   administrator BOOLEAN DEFAULT 0
 );
