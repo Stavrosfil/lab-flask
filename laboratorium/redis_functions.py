@@ -47,8 +47,8 @@ def set_lab_id(user, lab_id):
         lab_id {int} --  The lab ID the user is checking in or out. 0 means he is checked out.
     """
 
-    r_in_lab = "{}:lab_id".format(user.user_id)
-    r.set(r_in_lab, lab_id)
+    r_lab_id = "{}:lab_id".format(user.user_id)
+    r.set(r_lab_id, lab_id)
 
 
 def set_last_checkin(user, timestamp):

@@ -1,5 +1,6 @@
 from laboratorium import redis_functions as rf
-from laboratorium import influx
+from laboratorium import influx_functions as inf
+
 import time
 
 
@@ -41,45 +42,19 @@ class User:
     def get_last_checkin(self):
         return rf.get_last_checkin(self)
 
-    def checkin(self):
+    def get_previous_checkin(self):
+        return rf.get_last_checkin(self)
 
+    def checkin(self):
         timestamp = time.time_ns()
 
-        infl = [
-            {
-                "measurement": "checkin",
-                "tags": {
-                    "user_id": self.user_id,
-                    "project": self.project,
-                    "checkin": True,
-                },
-                "time": timestamp,
-                "fields": {"delta_t": 0,},
-            }
-        ]
-
-        influx.write_points(infl)
+        inf.checkin(self, timestamp)
         rf.set_lab_id(self, self.lab_id)
         rf.set_last_checkin(self, timestamp)
 
     def checkout(self):
-
-        previous_checkin = rf.get_last_checkin(self)
         timestamp = time.time_ns()
 
-        infl = [
-            {
-                "measurement": "checkin",
-                "tags": {
-                    "user_id": self.user_id,
-                    "project": self.project,
-                    "checkin": False,
-                },
-                "time": timestamp,
-                "fields": {"delta_t": timestamp - previous_checkin,},
-            }
-        ]
-
-        influx.write_points(infl)
+        inf.checkout(self, timestamp)
         rf.set_lab_id(self, 0)
         rf.set_last_checkin(self, 0)
