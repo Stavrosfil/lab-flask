@@ -1,6 +1,7 @@
 from flask import request
 from flask_restful import Resource
 from laboratorium.User import User
+from laboratorium import auth
 
 from laboratorium.db import get_db, get_user, query_db
 
@@ -10,6 +11,7 @@ import json
 
 
 class GetUser(Resource):
+    @auth.login_required
     def get(self, user_id):
         user = User(get_user(user_id))
 
@@ -28,6 +30,7 @@ class GetUser(Resource):
 
 
 class AddUser(Resource):
+    @auth.login_required
     def put(self):
         sql = """ INSERT INTO users (user_id,
                                     second_id,
@@ -61,6 +64,7 @@ class AddUser(Resource):
 
 
 class GetUsers(Resource):
+    @auth.login_required
     def get(self):
         sql = "select * from users"
         q = query_db(sql)
@@ -76,13 +80,17 @@ class GetUsers(Resource):
 
 
 class CheckIn(Resource):
+    @auth.login_required
     def post(self):
         # Only user_id and in_lab is needed here.
         user = User(request.json)
         user.checkin()
+        return "checkedin"
 
 
 class CheckOut(Resource):
+    @auth.login_required
     def post(self):
         user = User(request.json)
         user.checkout()
+        return "checkedout"
