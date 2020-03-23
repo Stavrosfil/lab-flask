@@ -5,31 +5,26 @@ import time
 
 
 class User:
-    user_id = None
-    second_id = None
-    mm_username = ""
-    first_name = ""
-    last_name = ""
-    project = ""
-    administrator = False
-    lab_id = "0"
-    key_id = "0"
 
     # TODO: make sure the user is valid before performing other tasks
     def __init__(self, user={}):
+
+        self.user_id = None
+        self.second_id = None
+        self.mm_username = ""
+        self.first_name = ""
+        self.last_name = ""
+        self.project = ""
+        self.administrator = False
+        self.lab_id = "0"
+        self.key_id = "0"
+
         if user is not None:
-            self.user_id = user.get("user_id")
-            self.second_id = user.get("second_id")
-            self.mm_username = user.get("mm_username")
-            self.first_name = user.get("first_name")
-            self.last_name = user.get("last_name")
-            self.project = user.get("project")
-            self.lab_id = (
-                self.lab_id if user.get("lab_id") is None else user.get("lab_id")
-            )
-            self.key_id = (
-                self.key_id if user.get("key_id") is None else user.get("key_id")
-            )
+            _vars = vars(self)
+            for var in _vars:
+                parsed = user.get(var)
+                if parsed is not None:
+                    _vars[var] = parsed
 
             # TODO: check other values for initialization.
 
