@@ -1,32 +1,49 @@
 from laboratorium import redis_functions as rf
 from laboratorium import influx_functions as inf
+from laboratorium import mongo_functions as mf
 
 import time
 
 
 class User:
+    def __init__(self, user_dict={}):
 
-    # TODO: make sure the user is valid before performing other tasks
-    def __init__(self, user={}):
+        self.user_uuid = None
+        self.tag_uuids = []
+        self.tag_uuid = None
+        self.key_uuids = []
+        self.key_uuid = None
+        self.lab_uuid = None
 
-        self.user_id = None
-        self.second_id = None
         self.mm_username = ""
         self.first_name = ""
         self.last_name = ""
         self.project = ""
         self.administrator = False
-        self.lab_id = "0"
-        self.key_id = "0"
 
-        if user is not None:
+        # Initialize by dictionary parsed from json request.
+        self.init_from_dict(user_dict)
+
+        if self.user_uuid is None:
+            self = None
+
+    def init_from_dict(self, user_dict):
+        if user_dict is not None:
             _vars = vars(self)
             for var in _vars:
-                parsed = user.get(var)
+                parsed = user_dict.get(var)
                 if parsed is not None:
                     _vars[var] = parsed
 
-            # TODO: check other values for initialization.
+            # if user_dict.get('tag_uuid') is not None:
+            #     tag_uuids.append(user_dict.get('tag_uuid'))
+
+            # if user_dict.get('key_uuid') is not None:
+            #     key_uuids.append(user_dict.get('key_uuid'))
+
+    def init_from_mongo(self):
+        user_dict = mf.get_user_by_tag_uuid(self.tag_uuid)
+        self.init_from_dict(user_dict)
 
     def get_lab_id(self):
         return rf.get_lab_id(self)
