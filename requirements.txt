@@ -1,9 +1,7 @@
 eventlet
 flask
-flask-socketio
-flask-bootstrap
-flask-mqtt
 mattermostdriver
 flask-redis
 flask-restful
 flask-influxdb
+flask-pymongo
