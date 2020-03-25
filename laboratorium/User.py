@@ -6,13 +6,13 @@ import time
 
 
 class User:
-    def __init__(self, user_dict={}):
+    def __init__(self, user_dict=None):
 
+        if user_dict is None:
+            user_dict = {}
         self.user_uuid = None
-        self.tag_uuids = []
-        self.tag_uuid = None
-        self.key_uuids = []
-        self.key_uuid = None
+        self.tag_uuid = []
+        self.key_uuid = []
         self.lab_uuid = None
 
         self.mm_username = ""
@@ -24,25 +24,23 @@ class User:
         # Initialize by dictionary parsed from json request.
         self.init_from_dict(user_dict)
 
-        if self.user_uuid is None:
-            self = None
-
     def init_from_dict(self, user_dict):
         if user_dict is not None:
             _vars = vars(self)
             for var in _vars:
                 parsed = user_dict.get(var)
                 if parsed is not None:
-                    _vars[var] = parsed
+                    if isinstance(_vars[var], list):
+                        _vars[var].append(parsed)
+                    else:
+                        _vars[var] = parsed
 
-            # if user_dict.get('tag_uuid') is not None:
-            #     tag_uuids.append(user_dict.get('tag_uuid'))
-
-            # if user_dict.get('key_uuid') is not None:
-            #     key_uuids.append(user_dict.get('key_uuid'))
+        # TODO: if user_uuid == None return None or something
 
     def init_from_mongo(self):
-        user_dict = mf.get_user_by_tag_uuid(self.tag_uuid)
+        user_dict = mf.get_user_by_tag_uuid(self.tag_uuid[0])
+        if user_dict is not None:
+            user_dict["user_uuid"] = user_dict["_id"]
         self.init_from_dict(user_dict)
 
     def get_lab_id(self):
@@ -61,7 +59,7 @@ class User:
         timestamp = time.time_ns()
 
         inf.checkin(self, timestamp)
-        rf.set_lab_id(self, self.lab_id)
+        rf.set_lab_id(self, self.lab_uuid)
         rf.set_last_checkin(self, timestamp)
 
     def checkout(self):
