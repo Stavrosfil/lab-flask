@@ -29,11 +29,8 @@ class User:
             _vars = vars(self)
             for var in _vars:
                 parsed = user_dict.get(var)
-                if parsed is not None:
-                    if isinstance(_vars[var], list):
-                        _vars[var].append(parsed)
-                    else:
-                        _vars[var] = parsed
+                if parsed is not None and isinstance(_vars[var], type(parsed)):
+                    _vars[var] = parsed
 
         # TODO: if user_uuid == None return None or something
 

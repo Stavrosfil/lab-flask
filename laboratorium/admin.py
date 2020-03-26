@@ -37,7 +37,7 @@ class AddUser(Resource):
     def put(self):
         user_dict = request.json
         user = User(user_dict)
-        mongo_functions.add_user(user)
+        return mongo_functions.add_user(user)
 
 
 class GetUsers(Resource):

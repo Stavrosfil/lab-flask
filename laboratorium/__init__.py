@@ -17,7 +17,6 @@ users = {}
 
 
 def create_app(test_config=None):
-
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
 
@@ -34,7 +33,7 @@ def create_app(test_config=None):
 
         users.update({
             app.config["ADMIN"]:
-            generate_password_hash(app.config["ADMIN_PW"]),
+                generate_password_hash(app.config["ADMIN_PW"]),
         })
 
         # Initialize global objects
