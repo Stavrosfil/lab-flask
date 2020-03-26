@@ -1,6 +1,9 @@
 from laboratorium import mongo
 import uuid
 from laboratorium import User
+from flask import current_app
+
+mongo_users = mongo.db[current_app.config["MONGO_USER_COLLECTION"]]
 
 
 def generate_uuid(user: User):
@@ -9,13 +12,10 @@ def generate_uuid(user: User):
 
 
 def get_user_by_tag_uuid(tag_uuid: str):
-    mongo_users = mongo.db["users"]
     return mongo_users.find_one({"tag_uuid": tag_uuid})
 
 
 def add_user(user: User):
-    mongo_users = mongo.db["users"]
-
     to_add = {}
     generated_uuid = generate_uuid(user)
     to_add["_id"] = generated_uuid
@@ -40,8 +40,6 @@ def add_user(user: User):
 
 
 def modify_user(user: User, to_modify: dict, mode="set"):
-    mongo_users = mongo.db["users"]
-
     new_result = mongo_users.update_one({'_id': generate_uuid(user)},
                                         {"${}".format(mode): to_modify},
                                         upsert=False)
@@ -68,8 +66,6 @@ def change_mm_username(user: User, mm_username: str):
 
 
 def _satisfies_distinct_fields(distinct_fields: dict):
-    mongo_users = mongo.db["users"]
-
     filtered_fields = []
     for field, value in distinct_fields.items():
         if isinstance(value, list):
