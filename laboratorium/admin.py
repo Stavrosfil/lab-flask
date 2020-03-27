@@ -46,6 +46,41 @@ class GetUsers(Resource):
         pass
 
 
+class MakeAdministrator(Resource):
+    @auth.login_required
+    def post(self):
+        user = User(request.json)
+        mongo_functions.make_administrator(user)
+
+
+class MakeAlumni(Resource):
+    @auth.login_required
+    def post(self):
+        user = User(request.json)
+        mongo_functions.make_alumni(user)
+
+
+class AddTag(Resource):
+    @auth.login_required
+    def post(self):
+        user = User(request.json)
+        mongo_functions.add_tag(user)
+
+
+class RemoveTag(Resource):
+    @auth.login_required
+    def post(self):
+        user = User(request.json)
+        mongo_functions.remove_tag(user)
+
+
+class ChangeMmUsername(Resource):
+    @auth.login_required
+    def post(self):
+        user = User(request.json)
+        mongo_functions.change_mm_username(user)
+
+
 class CheckIn(Resource):
     @auth.login_required
     def post(self):

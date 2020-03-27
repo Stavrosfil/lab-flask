@@ -10,16 +10,17 @@ class User:
 
         if user_dict is None:
             user_dict = {}
-        self.user_uuid = None
+        self.user_uuid = ""
         self.tag_uuid = []
         self.key_uuid = []
-        self.lab_uuid = None
+        self.lab_uuid = ""
 
         self.mm_username = ""
         self.first_name = ""
         self.last_name = ""
         self.project = ""
         self.administrator = False
+        self.alumni = False
 
         # Initialize by dictionary parsed from json request.
         self.init_from_dict(user_dict)
