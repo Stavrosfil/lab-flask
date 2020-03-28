@@ -33,6 +33,9 @@ class User:
                 if parsed is not None and isinstance(_vars[var], type(parsed)):
                     _vars[var] = parsed
 
+            if user_dict.get("_id") is not None:
+                self.user_uuid = user_dict.get("_id")
+
         # TODO: if user_uuid == None return None or something
 
     def init_from_mongo(self):
@@ -42,13 +45,16 @@ class User:
         self.init_from_dict(user_dict)
 
     def get_lab_id(self):
-        return rf.get_lab_id(self)
+        return rf.get_lab_uuid(self)
 
     def get_key_id(self):
-        return rf.get_key_id(self)
+        return rf.get_key_uuid(self)
 
     def get_last_checkin(self):
-        return rf.get_last_checkin(self)
+        last_checkin = rf.get_last_checkin(self)
+        if last_checkin is None:
+            return 0
+        return last_checkin
 
     def get_previous_checkin(self):
         return rf.get_last_checkin(self)
@@ -57,12 +63,11 @@ class User:
         timestamp = time.time_ns()
 
         inf.checkin(self, timestamp)
-        rf.set_lab_id(self, self.lab_uuid)
+        rf.set_lab_uuid(self, self.lab_uuid)
         rf.set_last_checkin(self, timestamp)
 
     def checkout(self):
         timestamp = time.time_ns()
-
         inf.checkout(self, timestamp)
-        rf.set_lab_id(self, 0)
+        rf.set_lab_uuid(self, '0')
         rf.set_last_checkin(self, 0)

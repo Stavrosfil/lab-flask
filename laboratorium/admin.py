@@ -43,7 +43,7 @@ class AddUser(Resource):
 class GetUsers(Resource):
     @auth.login_required
     def get(self):
-        pass
+        return mongo_functions.get_all_users()
 
 
 class MakeAdministrator(Resource):

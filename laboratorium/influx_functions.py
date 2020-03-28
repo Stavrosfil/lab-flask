@@ -2,17 +2,16 @@ from laboratorium import influx
 
 
 def checkin(user, timestamp):
-
     infl = [
         {
             "measurement": "checkin",
             "tags": {
-                "user_id": user.user_id,
+                "user_id": user.user_uuid,
                 "project": user.project,
                 "checkin": True,
             },
             "time": timestamp,
-            "fields": {"delta_t": 0,},
+            "fields": {"delta_t": 0, },
         }
     ]
 
@@ -20,17 +19,18 @@ def checkin(user, timestamp):
 
 
 def checkout(user, timestamp):
-
     infl = [
         {
             "measurement": "checkin",
             "tags": {
-                "user_id": user.user_id,
+                "user_uuid": user.user_uuid,
                 "project": user.project,
                 "checkin": False,
             },
             "time": timestamp,
-            "fields": {"delta_t": (timestamp - user.get_last_checkin()) // 10 ** 9,},
+            "fields": {
+                # TODO: check before adding to influx, or don't write to it at all if last check doesn't exist
+                "delta_t": (timestamp - user.get_last_checkin() if user.get_last_checkin() is not 0 else 0) // 10 ** 9},
         }
     ]
 
