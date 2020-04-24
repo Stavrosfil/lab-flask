@@ -96,3 +96,10 @@ class CheckOut(Resource):
         user = User(request.json)
         user.checkout()
         return {"status": "success"}
+
+
+class Authenticate(Resource):
+    # @auth.login_required
+    def post(self):
+        user = User(request.json)
+        return {"status": user.authenticate()}

@@ -14,3 +14,5 @@ def init_routes(api):
     api.add_resource(admin.AddTag, "/admin/addtag")
     api.add_resource(admin.RemoveTag, "/admin/removetag")
     api.add_resource(admin.ChangeMmUsername, "/admin/changemmusername")
+
+    api.add_resource(admin.Authenticate, "/auth")

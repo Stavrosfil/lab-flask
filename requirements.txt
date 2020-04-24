@@ -5,3 +5,4 @@ flask-redis
 flask-restful
 flask-influxdb
 flask-pymongo
+python-ldap
