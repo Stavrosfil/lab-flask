@@ -15,7 +15,7 @@ def generate_uuid(user: User):
 def get_all_users():
     users = []
     for user in mongo_users.find():
-        users.append(User.User(user).__dict__)
+        users.append(User.User(user))
     print(users)
     return users
 

@@ -4,6 +4,7 @@ from laboratorium.User import User
 from laboratorium import auth
 
 from laboratorium import mongo_functions
+from laboratorium import redis_functions
 
 import json
 
@@ -43,7 +44,10 @@ class AddUser(Resource):
 class GetUsers(Resource):
     @auth.login_required
     def get(self):
-        return mongo_functions.get_all_users()
+        users = mongo_functions.get_all_users()
+        for user in users:
+            user.lab_uuid = redis_functions.get_lab_uuid(user)
+        return [l.__dict__ for l in users]
 
 
 class MakeAdministrator(Resource):

@@ -40,7 +40,7 @@ def create_app(test_config=None):
         r.init_app(app)
         influx.init_app(app)
         api = Api(app)
-        mongo.init_app(app, app.config["MONGO_URI"])
+        mongo.init_app(app)
 
         routes.init_routes(api)
 
