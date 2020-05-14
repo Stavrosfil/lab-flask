@@ -1,9 +1,9 @@
-eventlet
 flask
-flask-socketio
-flask-bootstrap
-flask-mqtt
-mattermostdriver
 flask-redis
 flask-restful
 flask-influxdb
+flask-pymongo
+flask-httpauth
+mattermostdriver
+python-ldap
+gunicorn

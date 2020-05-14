@@ -30,7 +30,9 @@ def checkout(user, timestamp):
                 "checkin": False,
             },
             "time": timestamp,
-            "fields": {"delta_t": (timestamp - user.get_last_checkin()) // 10 ** 9,},
+            "fields": {
+                # TODO: check before adding to influx, or don't write to it at all if last check doesn't exist
+                "delta_t": (timestamp - user.get_last_checkin() if user.get_last_checkin() != 0 else 0) // 10 ** 9},
         }
     ]
 
