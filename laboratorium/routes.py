@@ -1,7 +1,8 @@
 def init_routes(api):
 
     from . import admin
-    prefix = '/lab-flask'
+    from . import slash_command
+    prefix = '/lab/api'
 
     api.add_resource(admin.GetUser, "{}/admin/getuser/<string:tag_uuid>".format(prefix))
     api.add_resource(admin.GetUsers, "{}/admin/getusers".format(prefix))
@@ -17,3 +18,5 @@ def init_routes(api):
     api.add_resource(admin.ChangeMmUsername, "{}/admin/changemmusername".format(prefix))
 
     api.add_resource(admin.Authenticate, "/auth")
+
+    api.add_resource(slash_command.SlashLab, "/lab/")
