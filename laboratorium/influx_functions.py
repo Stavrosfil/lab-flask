@@ -2,17 +2,16 @@ from laboratorium import influx
 
 
 def checkin(user, timestamp):
-
     infl = [
         {
             "measurement": "checkin",
             "tags": {
-                "user_id": user.user_id,
+                "user_id": user.user_uuid,
                 "project": user.project,
                 "checkin": True,
             },
             "time": timestamp,
-            "fields": {"delta_t": 0,},
+            "fields": {"delta_t": 0, },
         }
     ]
 
@@ -20,12 +19,11 @@ def checkin(user, timestamp):
 
 
 def checkout(user, timestamp):
-
     infl = [
         {
             "measurement": "checkin",
             "tags": {
-                "user_id": user.user_id,
+                "user_uuid": user.user_uuid,
                 "project": user.project,
                 "checkin": False,
             },

@@ -1,4 +1,5 @@
 flask
+mattermostdriver
 flask-redis
 flask-restful
 flask-influxdb

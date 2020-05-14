@@ -3,13 +3,6 @@ def init_routes(api):
     from . import admin
     prefix = '/lab-flask'
 
-<<<<<<< Updated upstream
-    api.add_resource(admin.GetUser, "/admin/getuser/<string:user_id>")
-    api.add_resource(admin.GetUsers, "/admin/getusers")
-    api.add_resource(admin.AddUser, "/admin/adduser")
-    api.add_resource(admin.CheckIn, "/admin/checkin")
-    api.add_resource(admin.CheckOut, "/admin/checkout")
-=======
     api.add_resource(admin.GetUser, "{}/admin/getuser/<string:tag_uuid>".format(prefix))
     api.add_resource(admin.GetUsers, "{}/admin/getusers".format(prefix))
 
@@ -24,4 +17,3 @@ def init_routes(api):
     api.add_resource(admin.ChangeMmUsername, "{}/admin/changemmusername".format(prefix))
 
     api.add_resource(admin.Authenticate, "/auth")
->>>>>>> Stashed changes
