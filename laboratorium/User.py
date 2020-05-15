@@ -3,7 +3,6 @@ from pprint import pprint
 from laboratorium import redis_functions as rf
 from laboratorium import influx_functions as inf
 from laboratorium import mongo_functions as mf
-
 from flask import current_app
 
 import ldap
@@ -80,10 +79,14 @@ class User:
             return 0
         return last_checkin
 
-    def checkin(self):
+    def checkin(self, lab_uuid):
         timestamp = time.time_ns()
+        print(self.__dict__)
         mf.checkin(self, lab_uuid)
-        inf.checkin(self, timestamp)
+        if self.lab_uuid == '0':
+            inf.checkout(self, timestamp)
+        else:
+            inf.checkin(self, timestamp)
         rf.set_lab_uuid(self, self.lab_uuid)
         rf.set_last_checkin(self, timestamp)
 

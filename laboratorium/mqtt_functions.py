@@ -19,8 +19,13 @@ def handle_mqtt_message(client, userdata, message):
     #     topic=message.topic,
     #     payload=json.loads(message.payload.decode())
     # )
-    tag_uuid = json.loads(message.payload.decode())['user_id']
-    user = mongo_functions.checkin_by_tag('1', tag_uuid)
+    payload = json.loads(message.payload.decode())
+    user = User.User(payload)
+    
+    device_uuid = payload['device_uuid']
+
+    user.checkin(lab_uuid=device_uuid)
+
     response = {
         'lab_uuid': user.lab_uuid,
         'top_line': "Welcome" if user.lab_uuid != '0' else "Goodbye",

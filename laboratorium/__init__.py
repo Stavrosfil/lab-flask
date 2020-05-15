@@ -3,17 +3,17 @@ import os
 from flask import Flask, g, request
 from flask_redis import FlaskRedis
 from flask_restful import Resource, Api
-from flask_influxdb import InfluxDB
 from flask_pymongo import PyMongo
 from flask_httpauth import HTTPBasicAuth
 from flask_mqtt import Mqtt
+from influxdb import InfluxDBClient
 
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from laboratorium import routes
 
 r = FlaskRedis()
-influx = InfluxDB()
+influx = # load stuff fron InfluxDBClient
 mongo = PyMongo()
 auth = HTTPBasicAuth()
 mqtt = Mqtt()
@@ -41,7 +41,6 @@ def create_app(test_config=None):
 
         # Initialize global objects
         r.init_app(app)
-        influx.init_app(app)
         mongo.init_app(app)
         mqtt.client_id = app.config['MQTT_CLIENT_ID']
         mqtt.init_app(app)
