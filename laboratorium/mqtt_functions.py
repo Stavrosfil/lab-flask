@@ -1,14 +1,16 @@
 from laboratorium import mongo, User, mqtt, mongo_functions
 import json
+from pprint import pprint
 
 mqtt.subscribe('laboratorium/lab1/auth/rfid')
-mqtt.publish('laboratorium/lab1/auth/response', 'Connection established')
-
-@mqtt.on_connect()
-def handle_connect(client, userdata, flags, rc):
-    mqtt.subscribe('laboratorium/lab1/auth/rfid')
-    mqtt.publish('laboratorium/lab1/auth/response', 'Connection established')
-    print('-'*20)
+data = {'top_line': 'Connection', 'bottom_line': 'established'}
+mqtt.publish('laboratorium/lab1/auth/response', json.dumps(data))
+    
+# @mqtt.on_connect()
+# def handle_connect(client, userdata, flags, rc):
+#     mqtt.subscribe('laboratorium/lab1/auth/rfid')
+#     mqtt_publish_json('laboratorium/lab1/auth/response', {'top_line': 'Connection', 'bottom_line': 'established'})
+#     print('-'*20)
 
 
 @mqtt.on_message()
@@ -19,6 +21,10 @@ def handle_mqtt_message(client, userdata, message):
     # )
     tag_uuid = json.loads(message.payload.decode())['user_id']
     user = mongo_functions.checkin_by_tag('1', tag_uuid)
-    response = {'user_name': user.first_name, 'direction': user.lab_uuid}
-    # print(response)
+    response = {
+        'lab_uuid': user.lab_uuid,
+        'top_line': "Welcome" if user.lab_uuid != '0' else "Goodbye",
+        'bottom_line': "{} {}.".format(user.last_name, user.first_name[0]),
+    }
+    pprint(message)
     mqtt.publish('laboratorium/lab1/auth/response', json.dumps(response)) 

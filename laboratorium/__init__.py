@@ -43,13 +43,12 @@ def create_app(test_config=None):
         r.init_app(app)
         influx.init_app(app)
         mongo.init_app(app)
+        mqtt.client_id = app.config['MQTT_CLIENT_ID']
         mqtt.init_app(app)
 
         @mqtt.on_log()
         def handle_logging(client, userdata, level, buf):
-            # app.logger.info('{}, {}'.format(level, buf))
             app.logger.info(buf)
-            # print(level, buf)
 
         from . import mqtt_functions
         mqtt_functions
