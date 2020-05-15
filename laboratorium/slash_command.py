@@ -1,28 +1,20 @@
 from flask import Flask, jsonify, request
 from laboratorium import mongo
+from laboratorium import mongo_functions as mf
 from flask_restful import Resource
 import json
 import random
 
 mongo_labs = mongo.db['labs']
-mongo_users = mongo.db['users']
-
-def update_object(key, data):
-    mongo_labs.update_one(key, {'$set': data}, upsert=True)
-
-def update_user(key, data):
-    mongo_users.update_one(key, {'$set': data}, upsert=True)
-    
+mongo_users = mongo.db['users']  
     
 key = {'_id': 1}
 data = {'user_count': 0, 'users': []}
-update_object(key, data)
+mf.update_object(mongo_labs, key, data)
 
 key = {'_id': 2}
 data = {'user_count': 0, 'users': []}
-update_object(key, data)
-
-users = mongo
+mf.update_object(mongo_labs, key, data)
 
 
 class SlashLab(Resource):
@@ -51,12 +43,13 @@ class SlashLab(Resource):
         elif request.form['text'] == 'checkout':
             lab = mongo_labs.find_one({'_id': 1})
             mm_username = request.form['user_name']
-            user = mongo_users.find_one({'mm_username': '@' + mm_username})
+            # user = mongo_users.find_one({'mm_username': '@' + mm_username})
             
             if user is not None:
+                mf.checkin()
                 if user.get('lab_id') is not None:
                     if user['lab_id'] != 0:
-                        update_user({'mm_username': '@' + mm_username}, {'lab_id': 0})
+                        mf.update_object(mongo_users, {'mm_username': '@' + mm_username}, {'lab_id': 0})
                         payload = {
                             'text': 'The user {} was successfully checked out!'\
                             .format(user['mm_username']),
@@ -72,7 +65,7 @@ class SlashLab(Resource):
                 else:
                     key = {'mm_username': '@' + mm_username}
                     data = {'lab_id': 0}
-                    update_user(key, data)
+                    mf.update_object(mongo_users, key, data)
                     
         elif request.form['text'] == 'open':
             pass
