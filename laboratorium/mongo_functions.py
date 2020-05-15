@@ -6,7 +6,6 @@ from flask import current_app
 
 mongo_users = mongo.db[current_app.config["MONGO_USER_COLLECTION"]]
 
-
 def generate_uuid(user: User):
     generated_uuid = uuid.uuid1()
     return str(generated_uuid)
@@ -48,6 +47,25 @@ def add_user(user: User):
         return {"Error": "One or more of the provided fields already exists"}, 500
 
 
+def checkin_by_tag(lab_uuid: str, tag_uuid: str):
+    user = mongo_users.find_one({'tag_uuids': tag_uuid})
+
+    if user is None: return None
+    user = User.User(user)
+    
+    if user.lab_uuid != '':
+        if user.lab_uuid != '0':
+            update_object(mongo_users, {'_id': user.user_uuid}, {'lab_uuid': '0'})
+        else:
+            key = {'_id': user.user_uuid}
+            data = {'lab_uuid': lab_uuid}
+            update_object(mongo_users, key, data)
+    else:
+        update_object(mongo_users, {'_id': user.user_uuid}, {'lab_uuid': '0'})
+        
+    return user
+
+
 def modify_user(user: User, to_modify: dict, mode="set"):
     new_result = mongo_users.update_one({'_id': user.user_uuid},
                                         {"${}".format(mode): to_modify},
@@ -86,3 +104,7 @@ def _satisfies_distinct_fields(distinct_fields: dict):
             filtered_fields.append(mongo_users.find_one({field: value}))
 
     return all(f is None for f in filtered_fields)
+
+
+def update_object(db, key, data):
+    db.update_one(key, {'$set': data}, upsert=True)

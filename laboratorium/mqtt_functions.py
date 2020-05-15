@@ -1,4 +1,4 @@
-from laboratorium import mongo, User, mqtt
+from laboratorium import mongo, User, mqtt, mongo_functions
 import json
 
 mqtt.subscribe('laboratorium/lab1/auth/rfid')
@@ -13,10 +13,12 @@ def handle_connect(client, userdata, flags, rc):
 
 @mqtt.on_message()
 def handle_mqtt_message(client, userdata, message):
-    data = dict(
-        topic=message.topic,
-        payload=json.loads(message.payload.decode())
-    )
-    response = {'user_name': data['payload']['user_id'], 'direction': 1}
-    print(response)
+    # data = dict(
+    #     topic=message.topic,
+    #     payload=json.loads(message.payload.decode())
+    # )
+    tag_uuid = json.loads(message.payload.decode())['user_id']
+    user = mongo_functions.checkin_by_tag('1', tag_uuid)
+    response = {'user_name': user.first_name, 'direction': user.lab_uuid}
+    # print(response)
     mqtt.publish('laboratorium/lab1/auth/response', json.dumps(response)) 
