@@ -5,6 +5,7 @@ flask-restful
 flask-influxdb
 flask-pymongo
 flask-httpauth
+flask-mqtt
 mattermostdriver
 python-ldap
 gunicorn
