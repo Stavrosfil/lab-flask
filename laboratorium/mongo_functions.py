@@ -6,6 +6,7 @@ from flask import current_app
 
 mongo_users = mongo.db[current_app.config["MONGO_USER_COLLECTION"]]
 
+
 def generate_uuid(user: User):
     generated_uuid = uuid.uuid1()
     return str(generated_uuid)
@@ -18,9 +19,8 @@ def get_all_users():
     return users
 
 
-def get_user_by_tag_uuid(tag_uuid: str):
-    return mongo_users.find_one({"tag_uuid": tag_uuid})
-
+def get_user(key, value):
+    return mongo_users.find_one({key: value})
 
 def add_user(user: User):
     to_add = {}
@@ -47,23 +47,29 @@ def add_user(user: User):
         return {"Error": "One or more of the provided fields already exists"}, 500
 
 
-def checkin_by_tag(lab_uuid: str, tag_uuid: str):
-    user = mongo_users.find_one({'tag_uuids': tag_uuid})
-
-    if user is None: return None
-    user = User.User(user)
-    
+def checkin(user: User, lab_uuid):
     if user.lab_uuid != '':
         if user.lab_uuid != '0':
             update_object(mongo_users, {'_id': user.user_uuid}, {'lab_uuid': '0'})
+            user.lab_uuid = '0'
         else:
             key = {'_id': user.user_uuid}
             data = {'lab_uuid': lab_uuid}
             update_object(mongo_users, key, data)
+            user.lab_uuid = lab_uuid
     else:
         update_object(mongo_users, {'_id': user.user_uuid}, {'lab_uuid': '0'})
-        
+        user.lab_uuid = '0'
     return user
+
+        
+# def checkin_by_tag(lab_uuid: str, tag_uuid: str):
+#     user = mongo_users.find_one({'tag_uuids': tag_uuid})
+
+#     if user is None: return None
+#     user = User.User(user)
+
+#     return checkin(user, lab_uuid)      
 
 
 def modify_user(user: User, to_modify: dict, mode="set"):
