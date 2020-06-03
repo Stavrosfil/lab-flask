@@ -1,6 +1,10 @@
 import logging
 
+# logging.basicConfig(level=logging.DEBUG,\
+#                     format='[%(levelname)s] [%(name)s] [%(threadName)s] [%(module)s]\n%(message)s\n')
+
 from laboratorium import create_app
+
 
 app = create_app()
 

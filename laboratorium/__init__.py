@@ -13,7 +13,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from laboratorium import routes
 
 r = FlaskRedis()
-influx = # load stuff fron InfluxDBClient
+influx = InfluxDBClient('influxdb', 8086, 'root', 'root', 'lab_users')
 mongo = PyMongo()
 auth = HTTPBasicAuth()
 mqtt = Mqtt()

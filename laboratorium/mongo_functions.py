@@ -16,8 +16,15 @@ def get_all_users():
     users = []
     for user in mongo_users.find():
         users.append(User.User(user))
+    for u in users:
+        print(u.lab_uuid)
     return users
 
+def remove_all_from_lab():
+    users = get_all_users()
+    for user in users:
+        user.checkin("0")
+    return users
 
 def get_user(key, value):
     return mongo_users.find_one({key: value})
@@ -58,7 +65,7 @@ def checkin(user: User, lab_uuid):
             update_object(mongo_users, key, data)
             user.lab_uuid = lab_uuid
     else:
-        update_object(mongo_users, {'_id': user.user_uuid}, {'lab_uuid': '0'})
+        update_object(mongo_users, {'_id': user.user_uuid}, {'lab_uuid': lab_uuid})
         user.lab_uuid = '0'
     return user
 

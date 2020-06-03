@@ -35,12 +35,12 @@ class User:
         # Initialize by dictionary parsed from json request.
         self.init_from_dict(user_dict)
 
-        if self.user_uuid == "":
-            self.init_from_mongo()
+        # if self.user_uuid == "":
+        self.init_from_mongo()
 
     def init_from_dict(self, user_dict):
         if user_dict is not None:
-            _vars = vars(self)
+            _vars = vars(self) 
             if user_dict.get('tag_uuid'):
                 if not isinstance(user_dict.get('tag_uuid'), type(list)):
                     user_dict['tag_uuid'] = [user_dict['tag_uuid']]
@@ -57,6 +57,8 @@ class User:
 
     def init_from_mongo(self):
         user_dict = None
+        if self.user_uuid != "":
+            user_dict = mf.get_user("_id", self.user_uuid)
         if self.tag_uuid != []:
             user_dict = mf.get_user('tag_uuids', self.tag_uuid[0])
         elif self.mm_username != "":
@@ -81,14 +83,13 @@ class User:
 
     def checkin(self, lab_uuid):
         timestamp = time.time_ns()
-        print(self.__dict__)
         mf.checkin(self, lab_uuid)
         if self.lab_uuid == '0':
             inf.checkout(self, timestamp)
         else:
             inf.checkin(self, timestamp)
-        rf.set_lab_uuid(self, self.lab_uuid)
-        rf.set_last_checkin(self, timestamp)
+            rf.set_lab_uuid(self, self.lab_uuid)
+            rf.set_last_checkin(self, timestamp)
 
     def checkout(self):
         timestamp = time.time_ns()

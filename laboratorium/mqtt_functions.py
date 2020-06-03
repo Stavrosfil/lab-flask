@@ -1,6 +1,5 @@
 from laboratorium import mongo, User, mqtt, mongo_functions
 import json
-from pprint import pprint
 
 mqtt.subscribe('laboratorium/lab1/auth/rfid')
 data = {'top_line': 'Connection', 'bottom_line': 'established'}
@@ -31,5 +30,4 @@ def handle_mqtt_message(client, userdata, message):
         'top_line': "Welcome" if user.lab_uuid != '0' else "Goodbye",
         'bottom_line': "{} {}.".format(user.last_name, user.first_name[0]),
     }
-    pprint(message)
     mqtt.publish('laboratorium/lab1/auth/response', json.dumps(response)) 

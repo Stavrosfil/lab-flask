@@ -45,7 +45,6 @@ class SlashLab(Resource):
             mm_username = request.form['user_name']
             user = User.User({'mm_username': mm_username})
             
-            # if user is not None:
             if user.lab_uuid != '0':
                 user.checkin(lab_uuid='0')
                 payload = {
