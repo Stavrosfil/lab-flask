@@ -5,6 +5,7 @@ from flask import current_app
 
 
 mongo_users = mongo.db[current_app.config["MONGO_USER_COLLECTION"]]
+mongo_labs = mongo.db[current_app.config["MONGO_LAB_COLLECTION"]]
 
 
 def generate_uuid(user: User):
@@ -29,6 +30,10 @@ def remove_all_from_lab():
 def get_user(key, value):
     return mongo_users.find_one({key: value})
 
+def get_lab_by_device(device):
+    lab = mongo_labs.find_one({"devices": {"$elemMatch": {"$eq": device}}})
+    return lab
+    
 def add_user(user: User):
     to_add = {}
     generated_uuid = generate_uuid(user)
@@ -58,11 +63,13 @@ def checkin(user: User, lab_uuid):
     if user.lab_uuid != '':
         if user.lab_uuid != '0':
             update_object(mongo_users, {'_id': user.user_uuid}, {'lab_uuid': '0'})
+            mongo_labs.update_one({'_id': lab_uuid}, {'$pull': {'users': user.user_uuid}})
             user.lab_uuid = '0'
         else:
             key = {'_id': user.user_uuid}
             data = {'lab_uuid': lab_uuid}
             update_object(mongo_users, key, data)
+            mongo_labs.update_one({'_id': lab_uuid}, {'$addToSet': {'users': user.user_uuid}})
             user.lab_uuid = lab_uuid
     else:
         update_object(mongo_users, {'_id': user.user_uuid}, {'lab_uuid': lab_uuid})

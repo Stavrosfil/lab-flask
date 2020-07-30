@@ -23,7 +23,10 @@ def handle_mqtt_message(client, userdata, message):
     
     device_uuid = payload['device_uuid']
 
-    user.checkin(lab_uuid=device_uuid)
+    lab = mongo_functions.get_lab_by_device(device_uuid)
+    print(lab)
+    
+    user.checkin(lab_uuid=lab.get('_id')) 
 
     response = {
         'lab_uuid': user.lab_uuid,

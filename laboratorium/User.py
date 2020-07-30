@@ -88,8 +88,8 @@ class User:
             inf.checkout(self, timestamp)
         else:
             inf.checkin(self, timestamp)
-            rf.set_lab_uuid(self, self.lab_uuid)
-            rf.set_last_checkin(self, timestamp)
+            #rf.set_lab_uuid(self, self.lab_uuid)
+            #rf.set_last_checkin(self, timestamp)
 
     def checkout(self):
         timestamp = time.time_ns()
