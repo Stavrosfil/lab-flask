@@ -44,7 +44,7 @@ class SlashLab(Resource):
             lab = mongo_labs.find_one({'_id': user.lab_uuid})
             
             if user.lab_uuid != '0':
-                user.checkin('0')
+                user.checkout()
                 payload = {
                     'text': 'The user {} was successfully checked out!'\
                     .format(user.mm_username),

@@ -63,23 +63,19 @@ def add_user(user: User):
 
 
 def checkin(user: User, lab_uuid):
-    if user.lab_uuid != '':
-        if user.lab_uuid != '0':
-            update_object(mongo_users, {'_id': user.user_uuid}, {'lab_uuid': '0'})
-            mongo_labs.update_one({'_id': user.lab_uuid}, {'$pull': {'users': user.user_uuid}})
-            user.lab_uuid = '0'
-        else:
-            key = {'_id': user.user_uuid}
-            data = {'lab_uuid': lab_uuid}
-            update_object(mongo_users, key, data)
-            mongo_labs.update_one({'_id': lab_uuid}, {'$addToSet': {'users': user.user_uuid}})
-            user.lab_uuid = lab_uuid
-    else:
+    if user.lab_uuid == '0' or user.lab_uuid == '':
         update_object(mongo_users, {'_id': user.user_uuid}, {'lab_uuid': lab_uuid})
-        user.lab_uuid = '0'
-    return user
+        mongo_labs.update_one({'_id': lab_uuid}, {'$addToSet': {'users': user.user_uuid}})
+    else:
+        print('User is already checked in!')
 
-        
+def checkout(user: User):
+    if user.lab_uuid != '0':
+        update_object(mongo_users, {'_id': user.user_uuid}, {'lab_uuid': '0'})
+        mongo_labs.update_one({'_id': user.lab_uuid}, {'$pull': {'users': user.user_uuid}})
+    else:
+        print('User not checked in!')
+
 # def checkin_by_tag(lab_uuid: str, tag_uuid: str):
 #     user = mongo_users.find_one({'tag_uuids': tag_uuid})
 

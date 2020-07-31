@@ -2,6 +2,7 @@ from pprint import pprint
 
 from laboratorium import influx_functions as inf
 from laboratorium import mongo_functions as mf
+from laboratorium import hooks
 from flask import current_app
 
 import ldap
@@ -69,17 +70,21 @@ class User:
     def get_last_checkin(self):
         return 1000
         
+
     def checkin(self, lab_uuid):
         timestamp = time.time_ns()
         mf.checkin(self, lab_uuid)
-        if self.lab_uuid == '0':
-            inf.checkout(self, timestamp)
-        else:
-            inf.checkin(self, timestamp)
+        inf.checkin(self, timestamp)
+        self.lab_uuid = lab_uuid
+        hooks.lab_checker(self, lab_uuid)
+
 
     def checkout(self):
         timestamp = time.time_ns()
+        mf.checkout(self)
         inf.checkout(self, timestamp)
+        hooks.lab_checker(self, self.lab_uuid)
+        self.lab_uuid = '0'
 
     def authenticate(self):
 
