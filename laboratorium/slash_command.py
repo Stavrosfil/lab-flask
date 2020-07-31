@@ -1,21 +1,12 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, current_app
 from laboratorium import mongo, User
 from laboratorium import mongo_functions as mf
 from flask_restful import Resource
-import json
-import random
+import json, random, requests
 
 mongo_labs = mongo.db['labs']
 mongo_users = mongo.db['users']  
     
-key = {'_id': '1'}
-data = {'user_count': 0, 'users': []}
-mf.update_object(mongo_labs, key, data)
-
-key = {'_id': '2'}
-data = {'user_count': 0, 'users': []}
-mf.update_object(mongo_labs, key, data)
-
 
 class SlashLab(Resource):
     def post(self):

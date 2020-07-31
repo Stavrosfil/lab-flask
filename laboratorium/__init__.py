@@ -19,7 +19,7 @@ auth = HTTPBasicAuth()
 mqtt = Mqtt()
 users = {}
 
-def create_app(test_config=None):
+def create_app(app):
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
 
@@ -45,9 +45,6 @@ def create_app(test_config=None):
         mqtt.client_id = app.config['MQTT_CLIENT_ID']
         mqtt.init_app(app)
 
-        @mqtt.on_log()
-        def handle_logging(client, userdata, level, buf):
-            app.logger.info(buf)
 
         from . import mqtt_functions
         mqtt_functions

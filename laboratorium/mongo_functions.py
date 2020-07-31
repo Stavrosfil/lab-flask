@@ -17,14 +17,14 @@ def get_all_users():
     users = []
     for user in mongo_users.find():
         users.append(User.User(user))
-    for u in users:
-        print(u.lab_uuid)
     return users
 
 def remove_all_from_lab():
     users = get_all_users()
     for user in users:
         user.checkin("0")
+    for lab in mongo_labs.find():
+        mongo_labs.update_one(lab, {'$set': {'users': []}})
     return users
 
 def get_user(key, value):
@@ -33,6 +33,9 @@ def get_user(key, value):
 def get_lab_by_device(device):
     lab = mongo_labs.find_one({"devices": {"$elemMatch": {"$eq": device}}})
     return lab
+
+def get_lab_population(lab_uuid):
+    return len(mongo_labs.find_one(lab_uuid)['users'])
     
 def add_user(user: User):
     to_add = {}

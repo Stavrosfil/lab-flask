@@ -4,7 +4,6 @@ from laboratorium.User import User
 from laboratorium import auth
 
 from laboratorium import mongo_functions
-from laboratorium import redis_functions
 
 import json
 

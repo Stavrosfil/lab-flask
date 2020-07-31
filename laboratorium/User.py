@@ -1,6 +1,5 @@
 from pprint import pprint
 
-from laboratorium import redis_functions as rf
 from laboratorium import influx_functions as inf
 from laboratorium import mongo_functions as mf
 from flask import current_app
@@ -67,20 +66,9 @@ class User:
             user_dict['user_uuid'] = user_dict['_id']
             self.init_from_dict(user_dict)
 
-    def get_lab_uuid(self):
-        self.lab_uuid = rf.get_lab_uuid(self)
-        return self.lab_uuid
-
-    def get_key_uuid(self):
-        self.key_uuid.append(rf.get_key_uuid(self))
-        return self.key_uuid
-
     def get_last_checkin(self):
-        last_checkin = rf.get_last_checkin(self)
-        if last_checkin is None:
-            return 0
-        return last_checkin
-
+        return 1000
+        
     def checkin(self, lab_uuid):
         timestamp = time.time_ns()
         mf.checkin(self, lab_uuid)
@@ -88,14 +76,10 @@ class User:
             inf.checkout(self, timestamp)
         else:
             inf.checkin(self, timestamp)
-            #rf.set_lab_uuid(self, self.lab_uuid)
-            #rf.set_last_checkin(self, timestamp)
 
     def checkout(self):
         timestamp = time.time_ns()
         inf.checkout(self, timestamp)
-        rf.set_lab_uuid(self, '0')
-        rf.set_last_checkin(self, 0)
 
     def authenticate(self):
 
