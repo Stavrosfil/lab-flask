@@ -76,7 +76,7 @@ class User:
         mf.checkin(self, lab_uuid)
         inf.checkin(self, timestamp)
         self.lab_uuid = lab_uuid
-        hooks.lab_checker(self, lab_uuid)
+        hooks.lab_checker(self, lab_uuid, checkedin=True)
 
 
     def checkout(self):
@@ -85,7 +85,7 @@ class User:
         inf.checkout(self, timestamp)
         lab_to_check = self.lab_uuid
         self.lab_uuid = '0'
-        hooks.lab_checker(self, lab_to_check)
+        hooks.lab_checker(self, lab_to_check, checkedin=False)
 
     def authenticate(self):
 
