@@ -1,15 +1,13 @@
 from laboratorium import mongo, User, mqtt, mongo_functions
 import json, requests
 
-mqtt.subscribe('laboratorium/lab1/auth/rfid')
-data = {'top_line': 'Connection', 'bottom_line': 'established'}
-mqtt.publish('laboratorium/lab1/auth/response', json.dumps(data))
-    
-# @mqtt.on_connect()
-# def handle_connect(client, userdata, flags, rc):
-#     mqtt.subscribe('laboratorium/lab1/auth/rfid')
-#     mqtt_publish_json('laboratorium/lab1/auth/response', {'top_line': 'Connection', 'bottom_line': 'established'})
-#     print('-'*20)
+@mqtt.on_connect()
+def handle_connect(client, userdata, flags, rc):
+    mqtt.subscribe('laboratorium/lab1/auth/rfid')
+    # mqtt.publish('laboratorium/lab1/auth/response', {'top_line': 'Connection', 'bottom_line': 'established'})
+    data = {'top_line': 'Connection', 'bottom_line': 'established'}
+    # mqtt.publish('laboratorium/lab1/auth/response', json.dumps(data))
+    print('-'*20)
 
  
 def postHook(message):
@@ -22,13 +20,11 @@ def handle_logging(client, userdata, level, buf):
 
 @mqtt.on_message()
 def handle_mqtt_message(client, userdata, message):
-    # data = dict(
-    #     topic=message.topic,
-    #     payload=json.loads(message.payload.decode())
-    # )
     payload = json.loads(message.payload.decode())
     user = User.User(payload)
+
     device_uuid = payload['device_uuid']
+
     lab = mongo_functions.get_lab_by_device(device_uuid)
     lab_uuid = lab.get('_id')
     
@@ -59,6 +55,6 @@ def handle_mqtt_message(client, userdata, message):
         message = f"The lab just closed!"
         postHook(message)
     elif population == 1 and user.lab_uuid == lab_uuid:
-        message = f"The lab just opened by @{user.mm_username}!\n\nReact and you are invited!"
+        message = f"#working_hour\nThe lab just opened by @{user.mm_username}!\n\nReact and you are invited!"
         postHook(message)
     

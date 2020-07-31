@@ -66,7 +66,7 @@ def checkin(user: User, lab_uuid):
     if user.lab_uuid != '':
         if user.lab_uuid != '0':
             update_object(mongo_users, {'_id': user.user_uuid}, {'lab_uuid': '0'})
-            mongo_labs.update_one({'_id': lab_uuid}, {'$pull': {'users': user.user_uuid}})
+            mongo_labs.update_one({'_id': user.lab_uuid}, {'$pull': {'users': user.user_uuid}})
             user.lab_uuid = '0'
         else:
             key = {'_id': user.user_uuid}

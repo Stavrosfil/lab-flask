@@ -13,17 +13,24 @@ class SlashLab(Resource):
         payload = {}
         
         if request.form['text'] == '':
-            mongo_labs.update({'_id': '1'}, {'$inc': {'user_count': 1}})
-            lab = mongo_labs.find_one({'_id': '1'})
-            payload = {
-                'text': 'There are {} people in lab: {}.'\
-                .format(lab['user_count'], lab['_id']),
-                'username': 'Lab Authenticator',
-                'icon_url': 'https://eu.ui-avatars.com/api/?name={}'.format(lab['user_count']),
-            }
+            for lab in mongo_labs.find():
+            # mongo_labs.update({'_id': 'lab1'}, {'$inc': {'user_count': 1}})
+                users = lab['users']
+                if len(users) == 1:
+                    message = f"There is 1 user in {lab['desc']}\n\n"
+                else:
+                    message = f"There are {len(users)} users in {lab['desc']}\n\n"
+                for user in users:
+                    user = mongo_users.find_one({'_id': user})
+                    message += f"{user['first_name']} {user['last_name']}\n"
+                payload = {
+                    'text': message,
+                    'username': 'Lab Authenticator',
+                    'icon_url': 'https://eu.ui-avatars.com/api/?name={}'.format(len(users)),
+                }
 
         elif request.form['text'] == 'stats':
-            lab = mongo_labs.find_one({'_id': '1'})
+            lab = mongo_labs.find_one({'_id': 'lab1'})
             payload = {
                 'text': 'The lab statistics for today! {}, {}'\
                 .format(lab['user_count'], lab['_id']),
@@ -32,23 +39,23 @@ class SlashLab(Resource):
             }
 
         elif request.form['text'] == 'checkout':
-            lab = mongo_labs.find_one({'_id': '1'})
             mm_username = request.form['user_name']
             user = User.User({'mm_username': mm_username})
+            lab = mongo_labs.find_one({'_id': user.lab_uuid})
             
             if user.lab_uuid != '0':
-                user.checkin(lab_uuid='0')
+                user.checkin('0')
                 payload = {
                     'text': 'The user {} was successfully checked out!'\
                     .format(user.mm_username),
                     'username': 'Lab Authenticator',
-                    'icon_url': 'https://eu.ui-avatars.com/api/?name={}'.format(lab['user_count']),
+                    'icon_url': 'https://eu.ui-avatars.com/api/?name={}'.format(user.first_name),
                 }
             else:
                 payload = {
                     'text': 'You are not checked in any lab!',
                     'username': 'Lab Authenticator',
-                    'icon_url': 'https://eu.ui-avatars.com/api/?name={}'.format(lab['user_count']),
+                    'icon_url': 'https://eu.ui-avatars.com/api/?name={}'.format(user.first_name),
                 }
                     
         elif request.form['text'] == 'open':

@@ -1,31 +1,29 @@
 import os
 
 from flask import Flask, g, request
-from flask_redis import FlaskRedis
 from flask_restful import Resource, Api
 from flask_pymongo import PyMongo
 from flask_httpauth import HTTPBasicAuth
 from flask_mqtt import Mqtt
 from influxdb import InfluxDBClient
-
+import paho.mqtt.client as mqttr
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from laboratorium import routes
 
-r = FlaskRedis()
 influx = InfluxDBClient('influxdb', 8086, 'root', 'root', 'lab_users')
 mongo = PyMongo()
 auth = HTTPBasicAuth()
 mqtt = Mqtt()
 users = {}
 
-def create_app(app):
+def create_app():
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
 
     # Load app config file
     app.config.from_pyfile("config.py", silent=False)
-
+    
     # ensure the instance folder exists
     try:
         os.makedirs(app.instance_path)
@@ -40,7 +38,6 @@ def create_app(app):
         })
 
         # Initialize global objects
-        r.init_app(app)
         mongo.init_app(app)
         mqtt.client_id = app.config['MQTT_CLIENT_ID']
         mqtt.init_app(app)
