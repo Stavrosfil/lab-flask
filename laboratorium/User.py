@@ -68,12 +68,12 @@ class User:
             self.init_from_dict(user_dict)
 
     def get_last_checkin(self):
-        return 1000
+        return mf.mongo_users.find_one({'_id': self.user_uuid})['last_checkin']
         
 
     def checkin(self, lab_uuid):
         timestamp = time.time_ns()
-        mf.checkin(self, lab_uuid)
+        mf.checkin(self, lab_uuid, timestamp)
         inf.checkin(self, timestamp)
         self.lab_uuid = lab_uuid
         hooks.lab_checker(self, lab_uuid, checkedin=True)

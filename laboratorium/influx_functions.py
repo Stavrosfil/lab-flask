@@ -19,6 +19,7 @@ def checkin(user, timestamp):
 
 
 def checkout(user, timestamp):
+    last_checkin = user.get_last_checkin()
     infl = [
         {
             "measurement": "checkin",
@@ -30,7 +31,7 @@ def checkout(user, timestamp):
             "time": timestamp,
             "fields": {
                 # TODO: check before adding to influx, or don't write to it at all if last check doesn't exist
-                "delta_t": (timestamp - user.get_last_checkin() if user.get_last_checkin() != 0 else 0) // 10 ** 9},
+                "delta_t": (timestamp - last_checkin if last_checkin != 0 else 0) // 10 ** 9},
         }
     ]
 

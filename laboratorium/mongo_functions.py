@@ -62,9 +62,9 @@ def add_user(user: User):
         return {"Error": "One or more of the provided fields already exists"}, 500
 
 
-def checkin(user: User, lab_uuid):
+def checkin(user: User, lab_uuid, timestamp):
     if user.lab_uuid == '0' or user.lab_uuid == '':
-        update_object(mongo_users, {'_id': user.user_uuid}, {'lab_uuid': lab_uuid})
+        update_object(mongo_users, {'_id': user.user_uuid}, {'lab_uuid': lab_uuid, 'last_checkin': timestamp})
         mongo_labs.update_one({'_id': lab_uuid}, {'$addToSet': {'users': user.user_uuid}})
     else:
         print('User is already checked in!')
