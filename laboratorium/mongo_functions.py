@@ -22,7 +22,7 @@ def get_all_users():
 def remove_all_from_lab():
     users = get_all_users()
     for user in users:
-        user.checkin("0")
+        user.checkout()
     for lab in mongo_labs.find():
         mongo_labs.update_one(lab, {'$set': {'users': []}})
     return users

@@ -83,8 +83,9 @@ class User:
         timestamp = time.time_ns()
         mf.checkout(self)
         inf.checkout(self, timestamp)
-        hooks.lab_checker(self, self.lab_uuid)
+        lab_to_check = self.lab_uuid
         self.lab_uuid = '0'
+        hooks.lab_checker(self, lab_to_check)
 
     def authenticate(self):
 
