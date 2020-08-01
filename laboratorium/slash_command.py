@@ -20,12 +20,15 @@ class SlashLab(Resource):
         }
 
         message = request.form["text"]
-        func = cases.get(message.split()[0] if message != "" else "")
-        payload = func()
+        command = message.split()[0] if message != "" else ""
+        data = message[(len(command) if len(command) == 0 else len(command) + 1) :]
+
+        func = cases.get(command)
+        payload = func(data)
         return jsonify(payload)
 
 
-def status():
+def status(data):
     for lab in mongo_labs.find():
         # mongo_labs.update({'_id': 'lab1'}, {'$inc': {'user_count': 1}})
         users = lab["users"]
@@ -44,7 +47,7 @@ def status():
         return payload
 
 
-def stats():
+def stats(data):
     lab = mongo_labs.find_one({"_id": "lab1"})
     payload = {
         "text": "The lab statistics for today! {}, {}".format(
@@ -58,7 +61,7 @@ def stats():
     return payload
 
 
-def checkout():
+def checkout(data):
     mm_username = request.form["user_name"]
     user = User.User({"mm_username": mm_username})
     lab = mongo_labs.find_one({"_id": user.lab_uuid})
@@ -85,12 +88,11 @@ def checkout():
     return payload
 
 
-def count():
+def count(data):
     pass
 
 
-def mock():
-    data = request.form["text"][5:]
+def mock(data):
     ans = []
     for c in data:
         ans.append(c.upper() if random.randint(0, 1) == 1 else c.lower())
