@@ -8,9 +8,6 @@ from laboratorium import mongo_functions
 import json
 
 
-# TODO: delete objects when no longer needed
-
-
 class GetUser(Resource):
     @auth.login_required
     def get(self, tag_uuid):
@@ -44,7 +41,7 @@ class GetUsers(Resource):
     @auth.login_required
     def get(self):
         users = mongo_functions.get_all_users()
-        #for user in users:
+        # for user in users:
         #    user.lab_uuid = redis_functions.get_lab_uuid(user)
         return [l.__dict__ for l in users]
 
@@ -89,14 +86,15 @@ class CheckIn(Resource):
     def post(self):
         # Only user_id and in_lab is needed here.
         user = User(request.json)
-        user.checkin(request.json['lab_uuid'])
+        user.checkin(request.json["lab_uuid"])
         return {"status": "success"}
+
 
 class RemoveFromLab(Resource):
     @auth.login_required
     def get(self):
         mongo_functions.remove_all_from_lab()
-    
+
 
 class CheckOut(Resource):
     @auth.login_required

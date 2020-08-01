@@ -40,11 +40,11 @@ class User:
 
     def init_from_dict(self, user_dict):
         if user_dict is not None:
-            _vars = vars(self) 
-            if user_dict.get('tag_uuid'):
-                if not isinstance(user_dict.get('tag_uuid'), type(list)):
-                    user_dict['tag_uuid'] = [user_dict['tag_uuid']]
-                    
+            _vars = vars(self)
+            if user_dict.get("tag_uuid"):
+                if not isinstance(user_dict.get("tag_uuid"), type(list)):
+                    user_dict["tag_uuid"] = [user_dict["tag_uuid"]]
+
             for var in _vars:
                 parsed = user_dict.get(var)
                 if parsed is not None and isinstance(_vars[var], type(parsed)):
@@ -60,16 +60,15 @@ class User:
         if self.user_uuid != "":
             user_dict = mf.get_user("_id", self.user_uuid)
         if self.tag_uuid != []:
-            user_dict = mf.get_user('tag_uuids', self.tag_uuid[0])
+            user_dict = mf.get_user("tag_uuids", self.tag_uuid[0])
         elif self.mm_username != "":
-            user_dict = mf.get_user('mm_username', self.mm_username)    
+            user_dict = mf.get_user("mm_username", self.mm_username)
         if user_dict is not None:
-            user_dict['user_uuid'] = user_dict['_id']
+            user_dict["user_uuid"] = user_dict["_id"]
             self.init_from_dict(user_dict)
 
     def get_last_checkin(self):
-        return mf.mongo_users.find_one({'_id': self.user_uuid})['last_checkin']
-        
+        return mf.mongo_users.find_one({"_id": self.user_uuid})["last_checkin"]
 
     def checkin(self, lab_uuid):
         timestamp = time.time_ns()
@@ -78,13 +77,12 @@ class User:
         self.lab_uuid = lab_uuid
         hooks.lab_checker(self, lab_uuid, checkedin=True)
 
-
     def checkout(self):
         timestamp = time.time_ns()
         mf.checkout(self)
         inf.checkout(self, timestamp)
         lab_to_check = self.lab_uuid
-        self.lab_uuid = '0'
+        self.lab_uuid = "0"
         hooks.lab_checker(self, lab_to_check, checkedin=False)
 
     def authenticate(self):
@@ -111,7 +109,12 @@ class User:
             print(l.simple_bind_s(service_bind_dn, service_secret))
 
             # Search for existing email first
-            result = l.search_s(base, ldap.SCOPE_SUBTREE, "email={}".format(self.ldap_username), attrsonly=0)
+            result = l.search_s(
+                base,
+                ldap.SCOPE_SUBTREE,
+                "email={}".format(self.ldap_username),
+                attrsonly=0,
+            )
             pprint(result)
             if result:
                 dn = result[0][0]
@@ -120,7 +123,12 @@ class User:
                 return "success"
 
             # If there is not an existing email, search for a username
-            result = l.search_s(base, ldap.SCOPE_SUBTREE, "uid={}".format(self.ldap_username), attrsonly=0)
+            result = l.search_s(
+                base,
+                ldap.SCOPE_SUBTREE,
+                "uid={}".format(self.ldap_username),
+                attrsonly=0,
+            )
             pprint(result)
             if result:
                 dn = result[0][0]

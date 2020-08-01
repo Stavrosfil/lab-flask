@@ -19,24 +19,29 @@ def get_all_users():
         users.append(User.User(user))
     return users
 
+
 def remove_all_from_lab():
     users = get_all_users()
     for user in users:
         user.checkout()
     for lab in mongo_labs.find():
-        mongo_labs.update_one(lab, {'$set': {'users': []}})
+        mongo_labs.update_one(lab, {"$set": {"users": []}})
     return users
+
 
 def get_user(key, value):
     return mongo_users.find_one({key: value})
+
 
 def get_lab_by_device(device):
     lab = mongo_labs.find_one({"devices": {"$elemMatch": {"$eq": device}}})
     return lab
 
+
 def get_lab_population(lab_uuid):
-    return len(mongo_labs.find_one(lab_uuid)['users'])
-    
+    return len(mongo_labs.find_one(lab_uuid)["users"])
+
+
 def add_user(user: User):
     to_add = {}
     generated_uuid = generate_uuid(user)
@@ -49,8 +54,7 @@ def add_user(user: User):
     to_add["administrator"] = user.administrator
     to_add["alumni"] = user.alumni
 
-    distinct_fields = {"tag_uuid": user.tag_uuid,
-                       "mm_username": user.mm_username}
+    distinct_fields = {"tag_uuid": user.tag_uuid, "mm_username": user.mm_username}
 
     if _satisfies_distinct_fields(distinct_fields):
         try:
@@ -63,18 +67,28 @@ def add_user(user: User):
 
 
 def checkin(user: User, lab_uuid, timestamp):
-    if user.lab_uuid == '0' or user.lab_uuid == '':
-        update_object(mongo_users, {'_id': user.user_uuid}, {'lab_uuid': lab_uuid, 'last_checkin': timestamp})
-        mongo_labs.update_one({'_id': lab_uuid}, {'$addToSet': {'users': user.user_uuid}})
+    if user.lab_uuid == "0" or user.lab_uuid == "":
+        update_object(
+            mongo_users,
+            {"_id": user.user_uuid},
+            {"lab_uuid": lab_uuid, "last_checkin": timestamp},
+        )
+        mongo_labs.update_one(
+            {"_id": lab_uuid}, {"$addToSet": {"users": user.user_uuid}}
+        )
     else:
-        print('User is already checked in!')
+        print("User is already checked in!")
+
 
 def checkout(user: User):
-    if user.lab_uuid != '0':
-        update_object(mongo_users, {'_id': user.user_uuid}, {'lab_uuid': '0'})
-        mongo_labs.update_one({'_id': user.lab_uuid}, {'$pull': {'users': user.user_uuid}})
+    if user.lab_uuid != "0":
+        update_object(mongo_users, {"_id": user.user_uuid}, {"lab_uuid": "0"})
+        mongo_labs.update_one(
+            {"_id": user.lab_uuid}, {"$pull": {"users": user.user_uuid}}
+        )
     else:
-        print('User not checked in!')
+        print("User not checked in!")
+
 
 # def checkin_by_tag(lab_uuid: str, tag_uuid: str):
 #     user = mongo_users.find_one({'tag_uuids': tag_uuid})
@@ -82,13 +96,13 @@ def checkout(user: User):
 #     if user is None: return None
 #     user = User.User(user)
 
-#     return checkin(user, lab_uuid)      
+#     return checkin(user, lab_uuid)
 
 
 def modify_user(user: User, to_modify: dict, mode="set"):
-    new_result = mongo_users.update_one({'_id': user.user_uuid},
-                                        {"${}".format(mode): to_modify},
-                                        upsert=False)
+    new_result = mongo_users.update_one(
+        {"_id": user.user_uuid}, {"${}".format(mode): to_modify}, upsert=False
+    )
     return str(new_result)
 
 
@@ -126,4 +140,4 @@ def _satisfies_distinct_fields(distinct_fields: dict):
 
 
 def update_object(db, key, data):
-    db.update_one(key, {'$set': data}, upsert=True)
+    db.update_one(key, {"$set": data}, upsert=True)

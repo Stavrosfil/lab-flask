@@ -2,8 +2,8 @@ def init_routes(api):
 
     from . import admin
     from . import slash_command
-    
-    prefix = '/lab/api'
+
+    prefix = "/lab/api"
 
     api.add_resource(admin.GetUser, "{}/admin/getuser/<string:tag_uuid>".format(prefix))
     api.add_resource(admin.GetUsers, "{}/admin/getusers".format(prefix))

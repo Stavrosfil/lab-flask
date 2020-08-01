@@ -11,11 +11,12 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 from laboratorium import routes
 
-influx = InfluxDBClient('influxdb', 8086, 'root', 'root', 'lab_users')
+influx = InfluxDBClient("influxdb", 8086, "root", "root", "lab_users")
 mongo = PyMongo()
 auth = HTTPBasicAuth()
 mqtt = Mqtt()
 users = {}
+
 
 def create_app():
     # create and configure the app
@@ -23,7 +24,7 @@ def create_app():
 
     # Load app config file
     app.config.from_pyfile("config.py", silent=False)
-    
+
     # ensure the instance folder exists
     try:
         os.makedirs(app.instance_path)
@@ -32,20 +33,19 @@ def create_app():
 
     with app.app_context():
 
-        users.update({
-            app.config["ADMIN"]:
-                generate_password_hash(app.config["ADMIN_PW"]),
-        })
+        users.update(
+            {app.config["ADMIN"]: generate_password_hash(app.config["ADMIN_PW"]),}
+        )
 
         # Initialize global objects
         mongo.init_app(app)
-        mqtt.client_id = app.config['MQTT_CLIENT_ID']
+        mqtt.client_id = app.config["MQTT_CLIENT_ID"]
         mqtt.init_app(app)
 
-
         from . import mqtt_functions
+
         mqtt_functions
-                
+
         api = Api(app)
         routes.init_routes(api)
 
@@ -57,5 +57,4 @@ def verify_password(username, password):
     if username in users:
         return check_password_hash(users.get(username), password)
     return False
-
 
