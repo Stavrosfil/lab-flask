@@ -114,13 +114,13 @@ def make_alumni(user: User):
     return modify_user(user, {"alumni": True}, "set")
 
 
-def add_tag(user: User):
-    print(user.tag_uuid)
-    return modify_user(user, {"tag_uuid": user.tag_uuid[0]}, "push")
+def add_tag(user: User, tag_uuid):
+    # print(user.tag_uuid)
+    return modify_user(user, {"tag_uuids": tag_uuid}, "push")
 
 
-def remove_tag(user: User):
-    return modify_user(user, {"tag_uuid": user.tag_uuid[0]}, "pull")
+def remove_tag(user: User, tag_uuid):
+    return modify_user(user, {"tag_uuids": user.tag_uuid}, "pull")
 
 
 def change_mm_username(user: User):

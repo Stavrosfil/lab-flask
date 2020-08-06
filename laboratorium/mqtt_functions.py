@@ -1,4 +1,4 @@
-from laboratorium import mongo, User, mqtt, mongo_functions, hooks
+from laboratorium import mongo, User, mqtt, mongo_functions, hooks, queue
 import json, requests
 
 
@@ -27,27 +27,36 @@ def handle_mqtt_message(client, userdata, message):
     lab = mongo_functions.get_lab_by_device(device_uuid)
     lab_uuid = lab.get("_id")
 
-    if payload["tag_uuid"][0] == "C9D3A847":
-        mongo_functions.remove_all_from_lab()
-
-    if user.user_uuid != "":
-
-        if user.lab_uuid == "0" or user.lab_uuid == "":
-            user.checkin(lab_uuid)
-        else:
-            user.checkout()
-
-        response = {
-            "lab_uuid": user.lab_uuid,
-            "top_line": "Welcome" if user.lab_uuid != "0" else "Goodbye",
-            "bottom_line": "{} {}.".format(user.last_name, user.first_name[0]),
-        }
-        mqtt.publish("laboratorium/lab1/auth/response", json.dumps(response))
+    # Check if there are waiting tasks to be performed e.g. a tag assignment
+    if queue:
+        # Call the corresponding function
+        func, data = queue.pop(0)
+        res = func(user=data, tag_uuid=payload["tag_uuid"][0])
+        print(res)
     else:
-        response = {
-            "lab_uuid": user.lab_uuid,
-            "top_line": "Error",
-            "bottom_line": "Unknown User",
-        }
-        mqtt.publish("laboratorium/lab1/auth/response", json.dumps(response))
+        # If there are no tasks in queue
+
+        if payload["tag_uuid"][0] == "C9D3A847":
+            mongo_functions.remove_all_from_lab()
+
+        if user.user_uuid != "":
+
+            if user.lab_uuid == "0" or user.lab_uuid == "":
+                user.checkin(lab_uuid)
+            else:
+                user.checkout()
+
+            response = {
+                "lab_uuid": user.lab_uuid,
+                "top_line": "Welcome" if user.lab_uuid != "0" else "Goodbye",
+                "bottom_line": "{} {}.".format(user.last_name, user.first_name[0]),
+            }
+            mqtt.publish("laboratorium/lab1/auth/response", json.dumps(response))
+        else:
+            response = {
+                "lab_uuid": user.lab_uuid,
+                "top_line": "Error",
+                "bottom_line": "Unknown User",
+            }
+            mqtt.publish("laboratorium/lab1/auth/response", json.dumps(response))
 

@@ -1,8 +1,8 @@
 from flask import Flask, jsonify, request, current_app
-from laboratorium import mongo, User
+from laboratorium import mongo, User, queue, events
 from laboratorium import mongo_functions as mf
 from flask_restful import Resource
-import json, random, requests
+import json, random, requests, re
 
 mongo_labs = mongo.db["labs"]
 mongo_users = mongo.db["users"]
@@ -17,6 +17,8 @@ class SlashLab(Resource):
             "stats": stats,
             "checkout": checkout,
             "mock": mock,
+            "add-tag": add_tag,
+            "clear-queue": clear_queue,
         }
 
         message = request.form["text"]
@@ -37,8 +39,10 @@ def status(data):
         else:
             message = f"There are {len(users)} users in {lab['desc']}\n\n"
         for user in users:
-            user = mongo_users.find_one({"_id": user})
-            message += f"{user['first_name']} {user['last_name']}\n"
+            # print("user:", user)
+            # user = mongo_users.find_one({"_id": user})
+            user = User.User({"_id": user})
+            message += f"{user.first_name} {user.last_name}\n"
         payload = {
             "text": message,
             "username": "Lab Authenticator",
@@ -103,3 +107,33 @@ def mock(data):
     }
     return payload
 
+
+def add_tag(data):
+    data = data.split(" ", 1)
+    hook_user = User.User({"mm_username": request.form.get("user_name")})
+    if not hook_user.administrator:
+        text = "You are not allowed to excecute this command."
+    elif len(data) == 1:
+        username = data[0]
+        user = User.User({"mm_username": username})
+        print(username, user.__dict__)
+        if user.user_uuid != "":
+            # Add the new assignment task in queue
+            queue.append((events.add_tag_after_command, user))
+            text = "Waiting for tag scan"
+        else:
+            text = "User does not exist"
+    else:
+        text = "Wrong request format"
+
+    payload = {
+        "text": text,
+        "username": "Lab Authenticator",
+        "icon_url": "https://eu.ui-avatars.com/api/?name={}".format(text),
+    }
+    return payload
+
+
+def clear_queue(data):
+    queue.clear()
+    return "clear"

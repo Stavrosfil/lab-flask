@@ -16,6 +16,7 @@ mongo = PyMongo()
 auth = HTTPBasicAuth()
 mqtt = Mqtt()
 users = {}
+queue = []
 
 
 def create_app():
