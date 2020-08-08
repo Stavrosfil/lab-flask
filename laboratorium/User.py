@@ -79,13 +79,14 @@ class User:
         inf.lab_status(lab_uuid, mf.get_lab_population(lab_uuid), timestamp)
 
     def checkout(self):
-        timestamp = time.time_ns()
-        mf.checkout(self)
-        inf.checkout(self, timestamp)
-        lab_to_check = self.lab_uuid
-        inf.lab_status(lab_to_check, mf.get_lab_population(lab_to_check), timestamp)
-        self.lab_uuid = "0"
-        hooks.lab_checker(self, lab_to_check, checkedin=False)
+        if self.lab_uuid != "" and self.lab_uuid != "0":
+            timestamp = time.time_ns()
+            mf.checkout(self)
+            inf.checkout(self, timestamp)
+            lab_to_check = self.lab_uuid
+            inf.lab_status(lab_to_check, mf.get_lab_population(lab_to_check), timestamp)
+            self.lab_uuid = "0"
+            hooks.lab_checker(self, lab_to_check, checkedin=False)
 
     def authenticate(self):
 

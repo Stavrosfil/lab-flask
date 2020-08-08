@@ -33,7 +33,12 @@ def checkout(user, timestamp):
             "time": timestamp,
             "fields": {
                 "delta_t": (
-                    (timestamp - last_checkin if last_checkin != 0 else 0) // 10 ** 9
+                    (
+                        timestamp - last_checkin
+                        if last_checkin != 0 or last_checkin is not None
+                        else 0
+                    )
+                    // 10 ** 9
                 )
             },
         }
